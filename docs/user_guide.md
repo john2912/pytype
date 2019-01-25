@@ -1,21 +1,5 @@
 # User guide
 
-
-<!--ts-->
-   * [User guide](#user-guide)
-      * [Introduction](#introduction)
-      * [The typing module](#the-typing-module)
-      * [Silencing errors](#silencing-errors)
-      * [Variable annotations](#variable-annotations)
-      * [Hiding extra dependencies](#hiding-extra-dependencies)
-      * [Pyi stub files](#pyi-stub-files)
-      * [Pytype's pyi stub files](#pytypes-pyi-stub-files)
-      * [Compatibility](#compatibility)
-
-<!-- Added by: rechen, at: 2019-01-07T11:32-08:00 -->
-
-<!--te-->
-
 ## Introduction
 
 Here's a simple example of plain Python code:
