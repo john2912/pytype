@@ -71,7 +71,7 @@ See [Silencing Errors][silencing-errors] for a more detailed example.
 The attribute being accessed may not exist. Often, the reason is that the
 attribute is declared in a method other than `__new__` or `__init__`:
 
-```python {.bad}
+```python
 class A(object):
   def make_foo(self):
     self.foo = 42
@@ -82,7 +82,7 @@ class A(object):
 To make pytype aware of `foo`, declare it as a class attribute (with the literal
 ellipses) and supply the type in a type comment:
 
-```python {.good}
+```python
 class A(object):
   foo = ...  # type: int
 ```
@@ -92,7 +92,7 @@ class A(object):
 A generic type was instantiated with incorrect concrete types.
 Example:
 
-```python {.bad}
+```python
 from typing import Generic, TypeVar
 
 T = TypeVar('T', int, float)
@@ -108,7 +108,7 @@ obj = A[str]()  # bad-concrete-type
 An attempt was made to set the `__defaults__` attribute of a function with an
 object that is not a constant tuple. Example:
 
-```python {.bad}
+```python
 import collections
 X = collections.namedtuple("X", "a")
 X.__new__.__defaults__ = [None]  # bad-function-defaults
@@ -119,7 +119,7 @@ X.__new__.__defaults__ = [None]  # bad-function-defaults
 At least one of the possible types for the return value does not match the
 declared return type. Example:
 
-```python {.bad}
+```python
 def f(x) -> int:
   if x:
     return 42
@@ -132,7 +132,7 @@ def f(x) -> int:
 An attempt was made to set the `__slots__` attribute of a class using an object
 that's not a string.
 
-```python {.bad}
+```python
 class Foo(object):
   __slots__ = (1, 2, 3)
 ```
@@ -141,7 +141,7 @@ class Foo(object):
 
 A tuple was unpacked into the wrong number of variables. Example:
 
-```python {.bad}
+```python
 a, b = (1, 2, 3)  # bad-unpacking
 ```
 
@@ -149,7 +149,7 @@ a, b = (1, 2, 3)  # bad-unpacking
 
 The class definition uses an illegal value for a base class. Example:
 
-```python {.bad}
+```python
 class A(42):  # base-class-error
   pass
 ```
@@ -158,7 +158,7 @@ class A(42):  # base-class-error
 
 A positional argument was supplied again as a keyword argument. Example:
 
-```python {.bad}
+```python
 def f(x):
   pass
 f(True, x=False)  # duplicate-keyword-argument
@@ -171,7 +171,7 @@ If you believe you are seeing this error due to a bug on pytype's end, see
 
 The abc.abstractmethod decorator was used in a non-abstract class. Example:
 
-```python {.bad}
+```python
 import abc
 class A(object):  # ignored-abstractmethod
   @abc.abstractmethod
@@ -181,7 +181,7 @@ class A(object):  # ignored-abstractmethod
 
 Add the `abc.ABCMeta` metaclass to fix this issue:
 
-```python {.good}
+```python
 import abc
 class A(object):
   __metaclass__ = abc.ABCMeta
@@ -195,7 +195,7 @@ class A(object):
 A type comment was found on a line on which type comments are not allowed.
 Example:
 
-```python {.bad}
+```python
 def f():
   return 42  # type: float  # ignored-type-comment
 ```
@@ -209,7 +209,7 @@ The module being imported was not found.
 
 Something is wrong with this annotation. Examples:
 
-```python {.bad}
+```python
 from typing import List, TypeVar, Union
 
 T = TypeVar("T")
@@ -232,7 +232,7 @@ def f(x: int if condition else str):  # bad: ambiguous type
 
 You will also see this error if you use a forward reference in typing.cast:
 
-```python {.bad}
+```python
 import typing
 
 v = typing.cast("A", None)  # invalid-annotation
@@ -242,7 +242,7 @@ class A(object):
 
 The solution is to use a type comment instead:
 
-```python {.good}
+```python
 v = None  # type: "A"
 class A(object):
   pass
@@ -253,7 +253,7 @@ class A(object):
 The error name is misspelled in a pytype disable/enable directive. Example with
 a misspelled `name-error`:
 
-```python {.bad}
+```python
 x = TypeDefinedAtRuntime  # pytype: disable=nmae-error  # invalid-directive
 ```
 
@@ -261,7 +261,7 @@ x = TypeDefinedAtRuntime  # pytype: disable=nmae-error  # invalid-directive
 
 Something was wrong with this function type comment. Examples:
 
-```python {.bad}
+```python
 def f(x):
   # type: (int)  # bad: missing return type
   pass
@@ -297,7 +297,7 @@ positional argument.
 
 Something was wrong with this type comment. Examples:
 
-```python {.bad}
+```python
   x = None  # type: NonexistentType  # bad: undefined type
   y = None  # type: int if x else str  # bad: ambiguous type
 ```
@@ -306,7 +306,7 @@ Something was wrong with this type comment. Examples:
 
 Something was wrong with this TypeVar definition. Examples:
 
-```python {.bad}
+```python
 from typing import TypeVar
 T = TypeVar("S")  # bad: storing TypeVar "S" as "T"
 T = TypeVar(42)  # bad: using a non-str value for the TypeVar name
@@ -318,7 +318,7 @@ T = TypeVar("T", 0, 100)  # bad: 0 and 100 are not types
 
 The dictionary key doesn't exist. Example:
 
-```python {.bad}
+```python
 x = {}
 y = x["y"]  # key-error
 ```
@@ -330,7 +330,7 @@ appeared on its own line after the first top-level definition. Such a directive
 takes effect for the rest of the file, regardless of indentation, which is
 probably not what you want:
 
-```python {.bad}
+```python
 def f() -> bool:
   # pytype: disable=bad-return-type  # late-directive
   return 42
@@ -338,12 +338,12 @@ def f() -> bool:
 
 Two equally acceptable fixes:
 
-```python {.good}
+```python
 def f() -> bool:
   return 42  # pytype: disable=bad-return-type
 ```
 
-```python {.good}
+```python
 # pytype: disable=bad-return-type
 def f() -> bool:
   return 42
@@ -354,7 +354,7 @@ def f() -> bool:
 
 The function was called with a parameter missing. Example:
 
-```python {.bad}
+```python
 def add(x, y):
   return x + y
 add(42)  # missing-parameter
@@ -367,7 +367,7 @@ If you believe you are seeing this error due to a bug on pytype's end, see
 
 The module attribute being accessed may not exist. Example:
 
-```python {.bad}
+```python
 import sys
 sys.nonexistent_attribute  # module-attr
 ```
@@ -377,7 +377,7 @@ sys.nonexistent_attribute  # module-attr
 A valid method resolution order cannot be created for the class being defined.
 Often, the culprit is cyclic inheritance:
 
-```python {.bad}
+```python
 class A(object):
   pass
 class B(object, A):  # mro-error
@@ -389,11 +389,11 @@ class B(object, A):  # mro-error
 This name does not exist in the current namespace. Note that types like `List`,
 `Dict`, etc., need to be imported from the typing module:
 
-```python {.bad}
+```python
 MyListType = List[str]  # name-error
 ```
 
-```python {.good}
+```python
 from typing import List
 
 MyListType = List[str]
@@ -403,7 +403,7 @@ MyListType = List[str]
 
 The object being called or instantiated is not callable. Example:
 
-```python {.bad}
+```python
 x = 42
 y = x()  # not-callable
 ```
@@ -412,7 +412,7 @@ y = x()  # not-callable
 
 The object being indexed is not indexable. Example:
 
-```python {.bad}
+```python
 tuple[3]  # not-indexable
 ```
 
@@ -420,7 +420,7 @@ tuple[3]  # not-indexable
 
 The class cannot be instantiated because it has abstract methods. Example:
 
-```python {.bad}
+```python
 import abc
 class A(object):
   __metaclass__ = abc.ABCMeta
@@ -439,7 +439,7 @@ This feature is not yet supported by pytype.
 The object an attribute was set on doesn't have that attribute, or that
 attribute isn't writable:
 
-```python {.bad}
+```python
 class Foo(object):
   __slots__ = ("x", "y")
 
@@ -462,7 +462,7 @@ The Python code contains a syntax error.
 
 A recursive definition was found in a pyi file. Example:
 
-```python {.bad}
+```python
 class A(B): ...
 class B(A): ...
 ```
@@ -475,7 +475,7 @@ please [file a bug][new-bug].
 Using both inline annotations and a type comment to annotate the same function
 is not allowed. Example:
 
-```python {.bad}
+```python
 def f() -> None:
   # type: () -> None  # redundant-function-type-comment
   pass
@@ -485,7 +485,7 @@ def f() -> None:
 
 The error message displays the type of the expression passed to it. Example:
 
-```python {.good}
+```python
 import os
 reveal_type(os.path.join("hello", u"world"))  # reveal-type: unicode
 ```
@@ -498,7 +498,7 @@ removed after debugging.
 This error currently applies only to pyi files. The type parameter is not bound
 to a class or function. Example:
 
-```python {.bad}
+```python
 from typing import AnyStr
 x = ...  # type: AnyStr  # unbound-type-param
 ```
@@ -507,7 +507,7 @@ Unbound type parameters are meaningless as types. If you want to take advantage
 of types specified by a type parameter's constraints or bound, specify those
 directly. So the above example should be rewritten as:
 
-```python {.good}
+```python
 from typing import Union
 x = ...  # type: Union[str,  unicode]
 ```
@@ -516,7 +516,7 @@ x = ...  # type: Union[str,  unicode]
 
 A binary operator was called with incompatible arguments. Example:
 
-```python {.bad}
+```python
 x = "hello" ^ "world"  # unsupported-operands
 ```
 
@@ -524,7 +524,7 @@ x = "hello" ^ "world"  # unsupported-operands
 
 The function was called with the wrong number of arguments. Example:
 
-```python {.bad}
+```python
 def add(x, y):
   return x + y
 add(1, 2, 3)  # wrong-arg-count
@@ -537,7 +537,7 @@ If you believe you are seeing this error due to a bug on pytype's end, see
 
 The function was called with the wrong argument types. Example:
 
-```python {.bad}
+```python
 def f(x: int):
   pass
 f(42.0)  # wrong-arg-types
@@ -550,7 +550,7 @@ If you believe you are seeing this error due to a bug on pytype's end, see
 
 The function was called with the wrong keyword arguments. Example:
 
-```python {.bad}
+```python
 def f(x=True):
   pass
 f(y=False)  # wrong-keyword-args
